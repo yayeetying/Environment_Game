@@ -7,9 +7,27 @@ pygame.display.set_caption("Environment")
 # defines frames per second game runs at
 FPS = 60
 
+#colors
+WHITE = (255, 255, 255)
+
+#user statistics
+lives=3
+score=0
+
 # background images
 ocean = pygame.image.load("images/ocean.jpeg")
 ocean = pygame.transform.scale(ocean, (WIDTH, HEIGHT))
+can = pygame.image.load(
+    os.path.join('images', 'trash_can.png'))
+can = pygame.transform.scale(can, (50, 70))
+bag =  pygame.image.load("images/bag.png")
+bag = pygame.transform.scale(bag, (50, 50))
+heart = pygame.image.load("images/p_heart.png")
+heart = pygame.transform.scale(heart, (25, 30))
+
+#fonts
+HEALTH_FONT = pygame.font.SysFont('comicsans', 25)
+WINNER_FONT = pygame.font.SysFont('comicsans', 100)
 
 # sprite images
 turtle = pygame.image.load("images/ocean.jpeg")
@@ -46,6 +64,24 @@ class Turtle(pygame.sprite.Sprite):
 
 def draw_window():
     WIN.blit(ocean, (0, 0))
+    WIN.blit(can, (30,40))
+    WIN.blit(bag, (200,100))
+
+    x,y = 10, 5
+    i=0
+
+    #health
+    while i<lives:
+        heart_rect = heart.get_rect()
+        heart_rect.x = x + 30 * i
+        heart_rect.y = y
+        WIN.blit(heart, heart_rect)
+        i = i+1
+
+    #score
+    score_text = HEALTH_FONT.render("SCORE: " + str(score), 1, WHITE)
+    WIN.blit(score_text, (350, 10))
+    
     pygame.display.update()
 
 # handles main loop of game
