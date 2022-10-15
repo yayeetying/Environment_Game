@@ -1,93 +1,63 @@
 import pygame
-import random
 
-class Key(pygame.sprite.Sprite):
-    def __init__(self, xpos, ypos, id):
-        super(Key, self).__init__()
-        self.image = pygame.image.load("button.png").convert()
-        self.clicked = False
-        self.rect = self.image.get_rect()
-        self.rect.y = ypos
-        self.rect.x = xpos
-        self.clicked = False
-        self.id = id
-        self.linkReady = False
-        self.links = []
-#-------------------------------
+class Disk: # Something we can create and manipulate
+def __init__(self,color,pos,size): # initialze the properties of the object
+self.color=color
+self.pos=pos
+self.size=size
 
-Black = (0, 0, 0)
-White = (255, 255, 255)
-Green = (0, 255, 0)
-Red = (255, 0, 0)
-Blue = (0, 0, 255)
+def Render(self,screen):
+pygame.draw.circle(screen,self.color,self.pos,self.size)
 
-pygame.init()
+def main(): # Where we start
+screen=pygame.display.set_mode((600,400))
+running=True
+RenderList=[] # list of objects
+MousePressed=False # Pressed down THIS FRAME
+MouseDown=False # mouse is held down
+MouseReleased=False # Released THIS FRAME
+Target=None # target of Drag/Drop
+while running:
+screen.fill((0,0,0)) # clear screen
+pos=pygame.mouse.get_pos()
+for Event in pygame.event.get():
+if Event.type == pygame.QUIT:
+running=False
+break # get out now
 
-size = (700, 600)
-screen = pygame.display.set_mode(size)
+if Event.type == pygame.MOUSEBUTTONDOWN:
+MousePressed=True
+MouseDown=True
 
-pygame.display.set_caption("This is a new window")
+if Event.type == pygame.MOUSEBUTTONUP:
+MouseReleased=True
+MouseDown=False
 
-done = False
-#----------------------------
-clock = pygame.time.Clock()
-#-----------------------------
-key_list = pygame.sprite.Group()
-#-------------------------------
+if MousePressed==True:
+for item in RenderList: # search all items
+if (pos[0]>=(item.pos[0]-item.size) and
+pos[0]<=(item.pos[0]+item.size) and
+pos[1]>=(item.pos[1]-item.size) and
+pos[1]<=(item.pos[1]+item.size) ): # inside the bounding box
+Target=item # "pick up" item
 
-# Main program loop
-while not done:
-    for event in pygame.event.get():
-        if event.type == pygame.mouse.get_pos()
-        x = pos[0]
-        y = pos[1]
-        if event.button == 3:
-            key_list.add(Key(x, y, len(key_list) + 1))
-        elif event.button == 1:
-            for key in key_list:
-                if key.rect.collidepoint(pos):
-                    key.clicked = True
-        elif event.button == 2:
-            for key in key_list:
-                if key.rect.collidepoint(pos):
-                    key.linkReady = True
-                    count = 0
-                    links = []
-                    for key in key_list:
-                        if key.linkReady == True:
-                            count += 1
-                            links.append(key.id)
-                    if count == 2:
-                        for key in key_list:
-                            if key.linkReady == True:
-                                key.linkReady = False
-                                count += 1
-                                key.links += links
+if Target is None: # didn't find any?
+Target=Disk((0,0,255),pos,10) # create a new one
+RenderList.append(Target) # add to list of things to draw
 
-        if event.type == pygame.MOUSEBUTTONUP:
-            for key in key_list:
-                key.clicked = False
-            drag_id = 0
-        #---------------------------------------
+if MouseDown and Target is not None: # if we are dragging something
+Target.pos=pos # move the target with us
 
-    #Game logic should go here
-    for key in key_list:
-        if key.clicked == True:
-            pos = pygame.mouse.get_pos()
-            key.rect.x = pos[0] - (key.rect.width/2)
-            key.rect.y = pos[1] - (key.rect.height/2)
-    #-------------------------------------------------
-    #Drawing code here
-    # First clear the screen to white. Do not put other drawing commands above this or they will be erased with the
-    screen.fill(Black)
+if MouseReleased:
+Target=None # Drop item, if we have any
 
-    #--------------------------------------------------
-    key_list.draw(screen)
+for item in RenderList:
+item.Render(screen) # Draw all items
 
-    # Update the screen
-    pygame.display.flip()
+MousePressed=False # Reset these to False
+MouseReleased=False # Ditto
+pygame.display.flip()
+return # End of function
 
-    # Limit to 60 frames per second
-    clock.tick(60)
-
-pygame.quit()
+if __name__ == '__main__': # Are we RUNNING from this module?
+main() # Execute our main function
