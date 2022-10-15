@@ -19,6 +19,7 @@ class Turtle(pygame.sprite.Sprite):
     def __init__(self, width, height, pos_x, pos_y):
         super().__init__()
         self.sprites = []
+        self.is_animating = False
         for num in range(1,18):
             self.sprites.append(pygame.image.load("images/turtle_sprite/turtle_{0}.png".format(num)))
         self.current_sprite = 0
@@ -27,15 +28,20 @@ class Turtle(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.topleft = [pos_x,pos_y]
     
+    def animate(self):
+        self.is_animating = True
+
     # update sprite animation (go to the next frame)
     def update(self):
-        self.current_sprite += 1
+        if self.is_animating == True:
+            self.current_sprite += 0.25
 
-        # restart animation
-        if self.current_sprite >= len(self.sprites):
-            self.current_sprite = 0
+            # restart animation
+            if self.current_sprite >= len(self.sprites):
+                self.current_sprite = 0
+                self.is_animating = False
 
-        self.image = self.sprites[self.current_sprite]
+            self.image = self.sprites[int(self.current_sprite)]
 
 
 def draw_window():
@@ -57,6 +63,8 @@ def main():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 run = False
+            if event.type == pygame.KEYDOWN:
+                turtle.animate() # simulate turtle animating
         
         # drawing
         draw_window()
